@@ -3,6 +3,8 @@ package nl.peeko.functie.maybe
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import nl.peeko.functie.outcome.Failure
+import nl.peeko.functie.outcome.Ok
 
 internal class MaybeTest: StringSpec({
     // toMaybe
@@ -11,6 +13,15 @@ internal class MaybeTest: StringSpec({
     }
     "Given null - When toMaybe is called - Then None is returned" {
         (null as Int?).toMaybe() shouldBe None
+    }
+
+    // okOr
+    "Given Just(2) - When okOr(Exception) is called - Then Ok(2) is returned" {
+        Just(2).okOr(Exception()) shouldBe Ok(2)
+    }
+    "Given None - When okOr(Exception) is called - Then Failure(Exception) is returned" {
+        val exception = Exception()
+        None.okOr(exception) shouldBe Failure(exception)
     }
 
     // unwrap
