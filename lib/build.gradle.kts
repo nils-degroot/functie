@@ -13,6 +13,7 @@ plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     id("org.jetbrains.dokka") version "1.6.10"
+    id("io.gitlab.arturbosch.detekt").version("1.20.0-RC1")
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
