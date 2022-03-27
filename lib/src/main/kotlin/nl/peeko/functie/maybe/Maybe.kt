@@ -1,5 +1,9 @@
 package nl.peeko.functie.maybe
 
+import nl.peeko.functie.outcome.Failure
+import nl.peeko.functie.outcome.Ok
+import nl.peeko.functie.outcome.Outcome
+
 /**
  * Sealed interface that might contain an inner value, if the value is present, implementation of the interface is a
  * [Just]. Otherwise, the value will be [None].
@@ -29,6 +33,16 @@ fun <T> T?.toMaybe(): Maybe<T> =
         Just(this)
     else
         None
+
+/**
+ * Turns a [Maybe]<[T]> into a [Outcome]<[T]>, changing the [Just] into a [Ok].
+ * And turning a [None] into a [Failure] with the passed parameter.
+ */
+fun <T> Maybe<T>.okOr(throwable: Throwable): Outcome<T> =
+    when (this) {
+        is Just -> Ok(value)
+        None -> Failure(throwable)
+    }
 
 /**
  * Attempt to unwrap the [Maybe]. Returning the value contained within the [Just] is it is a [Just].
