@@ -29,7 +29,9 @@ internal class MaybeTest: StringSpec({
         Just(2).unwrap() shouldBe 2
     }
     "Given None - When unwrap is called - Then a NullPointerException is thrown" {
-        shouldThrow<NullPointerException> { None.unwrap() }
+        shouldThrow<NullPointerException> {
+            (None as Maybe<Int>).unwrap()
+        }
     }
 
     // unwrapOr
