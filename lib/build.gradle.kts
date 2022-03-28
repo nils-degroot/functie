@@ -64,6 +64,7 @@ tasks.withType<DokkaTask>().configureEach {
                 "module.md",
                 "docs/maybe.md",
                 "docs/outcome.md",
+                "docs/non-empty-list.md",
             )
         }
     }

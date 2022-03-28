@@ -1,10 +1,12 @@
+@file:Suppress("WildcardImport")
+
 package nl.peeko.functie.nonemptylist
 
 import nl.peeko.functie.maybe.*
 
 /**
  * List that always has at least one value
- * @param T of the values in the list
+ * @param T Type of the values in the list
  */
 class NonEmptyList<T>(
     /**
@@ -12,7 +14,7 @@ class NonEmptyList<T>(
      */
     val head: T,
     /**
-     * Tail values in the list
+     * Other values in the list
      */
     val tail: Array<out T>
 ): Collection<T> {
@@ -82,9 +84,10 @@ class NonEmptyList<T>(
     inline fun <reified S> map(transformation: (T) -> S): NonEmptyList<S> =
         NonEmptyList(
             transformation(head),
-            tail.map(transformation).toTypedArray()
+            tail.map(transformation)
+                .toTypedArray()
         )
-
+}
 
 /**
  * Initializer method for [NonEmptyList]
