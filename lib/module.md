@@ -1,3 +1,3 @@
 # Module Functie
 
-A more typesafe functional library for kotlin programming.
+A library for more functional and safe programming and in kotlin.
