@@ -64,3 +64,15 @@ inline fun <T, S> Outcome<T>.andThen(func: (T) -> Outcome<S>): Outcome<S> =
         is Ok -> func(value)
         is Failure -> Failure(throwable)
     }
+
+/**
+ * Try to preform the [body] functions, wrapping the outcome into a [Ok] if it is successful.
+ * Returns a [Failure] with the thrown exceptions otherwise
+ */
+@Suppress("TooGenericExceptionCaught")
+fun <T> attempt(body: () -> T): Outcome<T> =
+    try {
+        Ok(body())
+    } catch (e: Exception) {
+        Failure(e)
+    }

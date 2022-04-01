@@ -1,45 +1,90 @@
 package nl.peeko.functie.outcome
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.StringSpec
+import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
+import java.io.IOException
 
-internal class OutcomeTest: StringSpec({
-    // unwrap
-    "Given Ok(2) - When unwrap is called - Then 2 is returned" {
-        Ok(2).unwrap() shouldBe 2
-    }
-    "Given Failure(Exception) - When unwrap is called - Then the exception is thrown" {
-        shouldThrow<Exception> { (Failure(Exception()) as Outcome<Int>).unwrap() }
+internal class OutcomeTest: BehaviorSpec({
+    Given("Ok(2)") {
+        val ok: Outcome<Int> = Ok(2)
+
+        When("unwrap is called") {
+            Then("2 is returned") {
+                ok.unwrap() shouldBe 2
+            }
+        }
+
+        When("unwrapOr(5) is called") {
+            Then("2 is returned") {
+                ok.unwrapOr(5) shouldBe 2
+            }
+        }
+
+        When("map square is called") {
+            Then("Ok(4) is returned") {
+                ok.map { it * it } shouldBe Ok(4)
+            }
+        }
+
+        When("andThen Ok(square) is called") {
+            Then("Ok(4) is returned") {
+                ok.andThen { Ok(it * it) } shouldBe Ok(4)
+            }
+        }
+
+        When("andThen Failure is called") {
+            Then("a Failure is returned") {
+                ok.andThen { Failure(Exception()) }.shouldBeTypeOf<Failure>()
+            }
+        }
     }
 
-    // unwrapOr
-    "Given Ok(2) - When unwrapOr(5) is called - Then 2 is returned" {
-        Ok(2).unwrapOr(5) shouldBe 2
-    }
-    "Given Failure(Exception) - When unwrapOr(5) is called - Then 5 is returned" {
-        Failure(Exception()).unwrapOr(5) shouldBe 5
+    Given("a Failure") {
+        val failure: Outcome<Int> = Failure(Exception())
+
+        When("unwrap is called") {
+            Then("an exception is thrown") {
+                shouldThrow<Exception> { failure.unwrap() }
+            }
+        }
+
+        When("unwrapOr(5) is called") {
+            Then("5 is returned") {
+                failure.unwrapOr(5) shouldBe 5
+            }
+        }
+
+        When("map square is called") {
+            Then("a failure is returned") {
+                failure.map { it * it }.shouldBeTypeOf<Failure>()
+            }
+        }
+
+        When("andThen square is called") {
+            Then("a failure is returned") {
+                failure.andThen { Ok(it * it) }.shouldBeTypeOf<Failure>()
+            }
+        }
     }
 
-    // map
-    "Given Ok(2) - When map { it * it } is called - Then Ok(4) is returned" {
-        Ok(2).map { it * it } shouldBe Ok(4)
-    }
-    "Given Failure(Exception) - When { it * it } is called - Then Failure(Exception) is returned" {
-        val failure = Failure(Exception()) as Outcome<Int>
-        failure.map { it * it } shouldBe failure
-    }
+    Given("nothing") {
+        When("attempt 2 is called") {
+            Then("Ok(2) is returned") {
+                attempt { 2 } shouldBe Ok(2)
+            }
+        }
 
-    // andThen
-    "Given Ok(2) - When andThen { Ok(it * it) } is called - Then Ok(4) is returned" {
-        Ok(2).andThen { Ok(it * it) } shouldBe Ok(4)
-    }
-    "Given Ok(2) - When andThen { Failure(Exception) } is called - Then Failure(Exception) is returned" {
-        val failure = Failure(Exception()) as Outcome<Int>
-        Ok(2).andThen { failure } shouldBe failure
-    }
-    "Given Failure(Exception) - When andThen { it * it } is called - Then Failure(Exception) is returned" {
-        val failure = Failure(Exception()) as Outcome<Int>
-        failure.andThen { Ok(it * it) } shouldBe failure
+        When("a exception is thrown in an attempt") {
+            val attempt = attempt { throw IOException() }
+
+            Then("the return type is a failure") {
+                attempt.shouldBeTypeOf<Failure>()
+            }
+            Then("the correct exception is captured") {
+                (attempt as Failure).throwable.shouldBeTypeOf<IOException>()
+            }
+        }
     }
 })
